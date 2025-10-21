@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سبد خرید - Wixdora Shop</title>
+<style>
+:root {
+    --primary: #007bff;
+    --danger: #dc3545;
+    --success: #28a745;
+    --light: #f8f9fa;
+    --dark: #343a40;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family: Tahoma, Arial, sans-serif; background: var(--light); padding-top:70px; }
+
+.navbar { background: var(--primary); color:white; padding:1rem 0; position:fixed; top:0; width:100%; z-index:1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.nav-container { max-width:1200px; margin:0 auto; padding:0 15px; display:flex; justify-content:space-between; align-items:center; }
+.nav-brand { font-size:1.5rem; font-weight:bold; color:white; text-decoration:none; }
+.nav-links { display:flex; list-style:none; gap:1.5rem; }
+.nav-links a { color:white; text-decoration:none; padding:0.5rem 1rem; border-radius:5px; transition:0.3s; }
+.nav-links a:hover { background: rgba(255,255,255,0.2); }
+
+h2.section-title { text-align:center; margin:3rem 0 2rem; font-size:2rem; }
+
+.cart-table { width:90%; max-width:1000px; margin:0 auto 3rem; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+.cart-table th, .cart-table td { padding:1rem; text-align:center; border-bottom:1px solid #ddd; }
+.cart-table th { background: var(--primary); color:white; }
+.cart-table td input { width:50px; text-align:center; }
+.cart-table td .remove-btn { background: var(--danger); color:white; border:none; padding:0.3rem 0.6rem; border-radius:5px; cursor:pointer; transition:0.3s; }
+.cart-table td .remove-btn:hover { background:#a71d2a; }
+
+.cart-footer { width:90%; max-width:1000px; margin:0 auto 3rem; display:flex; justify-content:space-between; align-items:center; background:white; padding:1rem 2rem; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+.cart-footer .total { font-size:1.5rem; font-weight:bold; }
+.cart-footer .checkout-btn { padding:0.75rem 1.5rem; background: var(--success); color:white; border:none; border-radius:5px; cursor:pointer; font-size:1rem; transition:0.3s; }
+.cart-footer .checkout-btn:hover { background:#1e7e34; }
+
+footer { background: var(--dark); color:white; text-align:center; padding:2rem 1rem; margin-top:2rem; }
+footer a { color: var(--success); text-decoration:none; margin:0 0.5rem; transition:0.3s; }
+footer a:hover { color:white; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+<div class="nav-container">
+<a href="index.html" class="nav-brand">🛍️ Wixdora Shop</a>
+<ul class="nav-links">
+<li><a href="index.html">خانه</a></li>
+<li><a href="products.html">محصولات</a></li>
+<li><a href="cart.html">سبد خرید</a></li>
+<li><a href="login.html">ورود</a></li>
+</ul>
+</div>
+</nav>
+
+<h2 class="section-title">سبد خرید شما</h2>
+
+<table class="cart-table" id="cart-table">
+<thead>
+<tr>
+<th>محصول</th>
+<th>قیمت</th>
+<th>تعداد</th>
+<th>جمع</th>
+<th>حذف</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="cart-footer">
+<div class="total">جمع کل: <span id="total-price">0</span> افغانی</div>
+<button class="checkout-btn" onclick="checkout()">پرداخت</button>
+</div>
+
+<footer>
+© 2025 Wixdora Shop | 
+<a href="#">اینستاگرام</a> | 
+<a href="#">تلگرام</a> | 
+<a href="#">توییتر</a>
+</footer>
+
+<script>
+function getCart() { try { return JSON.parse(localStorage.getItem('wixdora_cart')) || []; } catch(e){ return []; } }
+function saveCart(cart) { localStorage.setItem('wixdora_cart', JSON.stringify(cart)); }
+
+function displayCart() {
+const cart=getCart();
+const tbody=document.querySelector('#cart-table tbody');
+tbody.innerHTML='';
+let total=0;
+cart.forEach((item,index)=>{
+const sum=item.price*item.quantity;
+total+=sum;
+const row=document.createElement('tr');
+row.innerHTML=`
+<td>${item.name}</td>
+<td>${item.price.toLocaleString()}</td>
+<td><input type="number" min="1" value="${item.quantity}" onchange="updateQuantity(${index},this.value)"></td>
+<td>${sum.toLocaleString()}</td>
+<td><button class="remove-btn" onclick="removeItem(${index})">حذف</button></td>`;
+tbody.appendChild(row);
+});
+document.getElementById('total-price').innerText=total.toLocaleString();
+}
+
+function updateQuantity(index,value){ let cart=getCart(); cart[index].quantity=parseInt(value); saveCart(cart); displayCart(); }
+function removeItem(index){ let cart=getCart(); cart.splice(index,1); saveCart(cart); displayCart(); }
+function checkout(){ const cart=getCart(); if(cart.length===0){ alert("سبد خرید شما خالی است!"); return; } alert("پرداخت با موفقیت انجام شد ✅"); localStorage.removeItem('wixdora_cart'); displayCart(); }
+
+window.addEventListener('load', displayCart);
+</script>
+</body>
+</html>
